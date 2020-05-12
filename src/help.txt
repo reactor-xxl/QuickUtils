@@ -1,0 +1,21 @@
+
+Usage:
+
+list [path] [options] [output filename]
+
+    Where [options] are
+        -o    overwrites the previous file, if it exists
+        -j    generate listing in JSON format
+        -r    recursively list files (not implemented)
+
+
+
+Run without options to generate a listing of all files in the current directory.  The default output file name will be in the form of "List of files in [directory name].txt".  If a file with that name already exists, it is renamed to have "(old)" appended before the extension unless the -o switch is present, in which case it is overwritten.
+
+By default, the output file has one filename on each line, with a single newline on the last line of the file.
+
+The output for the -j switch (JSON format) will be as follows:
+
+{
+"short directory name" : [ "file_0", "file_1", "file_2", ... "file_n" ]
+}

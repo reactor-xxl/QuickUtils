@@ -23,13 +23,29 @@ SOFTWARE.
 ******************************************************************************/
 
 #include <iostream>
+#include <string>
 #include <filesystem>
 
 
-
-void handle_args( int argc, char *argv[] )
+struct Settings
 {
+	int s{ 42 };
+};
 
+void help()
+{
+	static const std::string	helpString{ "help" };
+	std::cout << helpString << std::endl;
+}
+
+Settings	read_args( int argc, char *argv[] )
+{
+	for ( auto i = 0; i < argc; ++i )
+	{
+		std::cout << std::fixed << std::setw( 3 ) << std::right << i << " : \"" << argv[i] << "\"\n";
+	}
+
+	return Settings{};
 }
 
 
@@ -37,15 +53,39 @@ void handle_args( int argc, char *argv[] )
 
 int	main( int argc, char *argv[] )
 {
-//	handle_args
+	Settings	settings = read_args( argc, argv );
 
+	std::filesystem::path	workingDirectory;
+	std::filesystem::path	listingDirectory;
+	std::filesystem::path	outputFilepath;
+
+
+	workingDirectory.assign( argv[0] );
+
+	listingDirectory = workingDirectory = workingDirectory.parent_path();
+
+	auto it = listingDirectory.end();
+
+	--it;
+
+	std::string		directoryShortname;
+
+	directoryShortname = it->generic_string();
+
+	std::string	filename{ "List of " };
+	filename += directoryShortname;
+	filename += "'s files.txt";
+
+
+	outputFilepath = listingDirectory / filename;
+
+	std::cout << "workingDirectory: " << workingDirectory << std::endl;
+	std::cout << "listingDirectory: " << listingDirectory << std::endl;
+	std::cout << "directoryShortname: " << directoryShortname << std::endl;
+	std::cout << "outputFilepath: " << outputFilepath << std::endl;
+
+	std::cin.get();
 	return 0;
 }
-
-
-
-
-
-
 
 
