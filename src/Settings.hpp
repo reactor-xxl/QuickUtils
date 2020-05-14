@@ -1,3 +1,4 @@
+#pragma once
 /*****************************************************************************
 							   MIT License
 
@@ -22,71 +23,44 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ******************************************************************************/
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <vector>
+// #include <string>
 #include <filesystem>
 
+using Path = std::filesystem::path;
+
 #include <My\utils.hpp>
+std::string		Utility::directory_name( Path path );
 
-#include "Settings.hpp"
-
-//using Path = std::filesystem::path;
-
-
-void help()
+class Settings
 {
-	static const std::string	helpString{ "help" };
-	std::cout << helpString << std::endl;
-}
+public:
+	enum class eOutputFormat{ Basic, JSON };
+
+	Settings() = default;
+	Settings( const Settings& ) = default;
+	Settings& operator=( const Settings& ) = default;
+
+	~Settings() = default;
 
 
+	void	processArgs( int argc, char *argv[] );
 
+	Path	getListingDirectory() const;
+	Path	getOutputFilePath() const;
 
-int	main( int argc, char *argv[] )
-{
-	Settings settings;
-	std::ostringstream ofileListString;
+	eOutputFormat	getFormat() const;
+	bool		allowOverwrite() const;
 
-	settings.processArgs( argc, argv );
+private:
+	void	setDefaults( const char *argv_0 );
+	void	buildOutfilePath();
 
-	Path outPath = settings.getOutputFilePath();
+	Path	m_workingDirectory{};
+	Path	m_listingDirectory{};
+	Path	m_outputFilepath{};
 
-	if ( !std::filesystem::exists( outPath ) || settings.allowOverwrite() )
-	{
-		auto listDirIt = std::filesystem::directory_iterator( settings.getListingDirectory() );
-		auto i = 0;
-		for ( auto& dirEntry : listDirIt )
-		{
-			if ( dirEntry.is_regular_file() )
-			{
-				ofileListString << dirEntry.path().filename().generic_string() << '\n';
-			}
-			++i;
-		}
+	eOutputFormat	m_format{ eOutputFormat::Basic };
 
-		std::ofstream	outfile( outPath );
-		outfile << ofileListString.str();
-		outfile.close();
+	bool	m_allowOverwrite{ false };
 
-		std::cout << "Wrote " << i << " filenames to " << outPath << std::endl;
-	}
-	else
-	{
-		std::cout << "Cannot generate file listing : the file "
-			<< outPath.generic_string() << " already exists, and overwriting is not allowed." << std::endl;
-	}
-
-
-	std::cin.get();
-	return 0;
-}
-
-
-
-
-
-
-
+};
